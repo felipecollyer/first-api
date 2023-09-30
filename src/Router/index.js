@@ -1,4 +1,5 @@
 var express = require("express");
+const conn = require("../DB/conn");
 var router = express.Router();
 
 router.use(function timeLog(req, res, next) {
@@ -10,8 +11,23 @@ router.get("/user", function (req, res) {
   res.send("Read user");
 });
 
-router.post("/user", function (req, res) {
-  res.send("Create user");
+router.get("/test", function (req, res) {
+  res.send("xxxx user");
+});
+
+router.post("/user", async function (req, res) {
+  const payload = req.body;
+
+  const sql = `INSERT INTO usuarios (email, senha) VALUES ('${payload.email}','${payload.password}')`;
+
+  conn.query(sql, function (err) {
+    if (err) {
+      console.log(err);
+    } else {
+      console.log("deu bom");
+      res.end();
+    }
+  });
 });
 
 router.put("/user", function (req, res) {
