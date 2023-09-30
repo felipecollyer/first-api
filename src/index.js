@@ -1,6 +1,6 @@
 const express = require("express");
 const app = express();
-const conn = require("./DB/conn");
+const database = require("./DB/conn");
 const port = 3000;
 const route = require("./Router");
 
@@ -9,10 +9,18 @@ app.use(
     extended: true,
   })
 );
+
 app.use(express.json());
 
 app.use("/", route);
 
+database
+  .connect()
+  .then(() => {
+    console.log("conectado ao banco de dados:");
+  })
+  .catch((erro) => console.log("ERROR:", erro));
+
 app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`);
+  console.log(`Servidor rodando na port:${port}`);
 });
