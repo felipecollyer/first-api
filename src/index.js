@@ -4,6 +4,13 @@ const conn = require("./DB/conn");
 const port = 3000;
 const route = require("./Router");
 
+app.use(
+  express.urlencoded({
+    extended: true,
+  })
+);
+app.use(express.json());
+
 app.use("/", route);
 
 app.listen(port, () => {
