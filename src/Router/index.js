@@ -1,79 +1,21 @@
-var Express = require("express");
-const Conn = require("../DB/conn");
-var Router = Express.Router();
+const Express = require("express");
+
+const Router = Express.Router();
+const Controler = require("../Controller/User");
 
 Router.use(function timeLog(req, res, next) {
   console.log("Time: ", Date.now());
   next();
 });
 
-Router.get("/user", function (req, res) {
-  const sql = "SELECT * FROM usuarios";
+Router.get("/user", Controler.ReadAllUser);
 
-  Conn.query(sql, (err, data) => {
-    if (err) {
-      console.log("errow");
-    } else {
-      res.send(data.rows);
-    }
-  });
-});
+Router.get("/user/:id", Controler.ReadOneUser);
 
-Router.get("/user/:id", function (req, res) {
-  const idParams = req.params.id;
+Router.post("/user", Controler.Createuser);
 
-  const sql = `SELECT * FROM usuarios WHERE id =${idParams}`;
+Router.put("/user/:id", Controler.UpdateUser);
 
-  Conn.query(sql, (err, data) => {
-    if (err) {
-      console.log("errow");
-    } else {
-      res.send(data.rows);
-    }
-  });
-});
-
-Router.post("/user", async function (req, res) {
-  const payload = req.body;
-
-  const sql = `INSERT INTO usuarios (email, senha) VALUES ('${payload.email}','${payload.senha}')`;
-
-  Conn.query(sql, function (err) {
-    if (err) {
-      console.log(err);
-    } else {
-      res.send(`Usuario ${payload.email} criado com sucesso`);
-    }
-  });
-});
-
-Router.put("/user/:id", function (req, res) {
-  const { id } = req.params;
-  const { email, senha } = req.body;
-
-  const sql = `UPDATE usuarios SET email = '${email}', senha = '${senha}' WHERE id = ${id} RETURNING *`;
-
-  Conn.query(sql, (err, data) => {
-    if (err) {
-      console.log(err);
-    } else {
-      res.send("Dados atualizados");
-    }
-  });
-});
-
-Router.delete("/user/:id", function (req, res) {
-  const { id } = req.params;
-
-  const sql = `DELETE FROM usuarios WHERE id = ${id}`;
-
-  Conn.query(sql, (err, data) => {
-    if (err) {
-      console.log("error", err);
-    } else {
-      res.send(`Usuario com ID ${id}, deletado!`);
-    }
-  });
-});
+Router.delete("/user/:id", Controler.DeleteUser);
 
 module.exports = Router;
