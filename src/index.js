@@ -1,27 +1,26 @@
 require("dotenv").config();
-const express = require("express");
-const app = express();
-const database = require("./DB/conn");
-const port = process.env.PORT;
-const route = require("./Router");
+const Express = require("express");
+const App = Express();
+const Database = require("./DB/conn");
+const Port = process.env.PORT;
+const Route = require("./Router");
 
-app.use(
-  express.urlencoded({
+App.use(
+  Express.urlencoded({
     extended: true,
   })
 );
 
-app.use(express.json());
+App.use(Express.json());
 
-app.use("/", route);
+App.use("/", Route);
 
-database
-  .connect()
+Database.connect()
   .then(() => {
     console.log("conectado ao banco de dados:");
   })
   .catch((erro) => console.log("ERROR:"));
 
-app.listen(port, () => {
+App.listen(Port, () => {
   console.log(`Servidor rodando em variavel de ambiente!`);
 });

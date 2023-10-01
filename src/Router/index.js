@@ -1,16 +1,16 @@
-var express = require("express");
-const conn = require("../DB/conn");
-var router = express.Router();
+var Express = require("express");
+const Conn = require("../DB/conn");
+var Router = Express.Router();
 
-router.use(function timeLog(req, res, next) {
+Router.use(function timeLog(req, res, next) {
   console.log("Time: ", Date.now());
   next();
 });
 
-router.get("/user", function (req, res) {
+Router.get("/user", function (req, res) {
   const sql = "SELECT * FROM usuarios";
 
-  conn.query(sql, (err, data) => {
+  Conn.query(sql, (err, data) => {
     if (err) {
       console.log("errow");
     } else {
@@ -19,12 +19,12 @@ router.get("/user", function (req, res) {
   });
 });
 
-router.get("/user/:id", function (req, res) {
+Router.get("/user/:id", function (req, res) {
   const idParams = req.params.id;
 
   const sql = `SELECT * FROM usuarios WHERE id =${idParams}`;
 
-  conn.query(sql, (err, data) => {
+  Conn.query(sql, (err, data) => {
     if (err) {
       console.log("errow");
     } else {
@@ -33,12 +33,12 @@ router.get("/user/:id", function (req, res) {
   });
 });
 
-router.post("/user", async function (req, res) {
+Router.post("/user", async function (req, res) {
   const payload = req.body;
 
   const sql = `INSERT INTO usuarios (email, senha) VALUES ('${payload.email}','${payload.senha}')`;
 
-  conn.query(sql, function (err) {
+  Conn.query(sql, function (err) {
     if (err) {
       console.log(err);
     } else {
@@ -47,13 +47,13 @@ router.post("/user", async function (req, res) {
   });
 });
 
-router.put("/user/:id", function (req, res) {
+Router.put("/user/:id", function (req, res) {
   const { id } = req.params;
   const { email, senha } = req.body;
 
   const sql = `UPDATE usuarios SET email = '${email}', senha = '${senha}' WHERE id = ${id} RETURNING *`;
 
-  conn.query(sql, (err, data) => {
+  Conn.query(sql, (err, data) => {
     if (err) {
       console.log(err);
     } else {
@@ -62,12 +62,12 @@ router.put("/user/:id", function (req, res) {
   });
 });
 
-router.delete("/user/:id", function (req, res) {
+Router.delete("/user/:id", function (req, res) {
   const { id } = req.params;
 
   const sql = `DELETE FROM usuarios WHERE id = ${id}`;
 
-  conn.query(sql, (err, data) => {
+  Conn.query(sql, (err, data) => {
     if (err) {
       console.log("error", err);
     } else {
@@ -76,4 +76,4 @@ router.delete("/user/:id", function (req, res) {
   });
 });
 
-module.exports = router;
+module.exports = Router;
