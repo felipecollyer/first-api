@@ -1,7 +1,8 @@
+require("dotenv").config();
 const express = require("express");
 const app = express();
 const database = require("./DB/conn");
-const port = 3000;
+const port = process.env.PORT;
 const route = require("./Router");
 
 app.use(
@@ -19,8 +20,8 @@ database
   .then(() => {
     console.log("conectado ao banco de dados:");
   })
-  .catch((erro) => console.log("ERROR:", erro));
+  .catch((erro) => console.log("ERROR:"));
 
 app.listen(port, () => {
-  console.log(`Servidor rodando na port:${port}`);
+  console.log(`Servidor rodando em variavel de ambiente!`);
 });
