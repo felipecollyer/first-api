@@ -4,15 +4,9 @@ const App = Express();
 const Database = require("./DB/conn");
 const Port = process.env.PORT;
 const Route = require("./Router");
+const Json = require("./Middlewares/Json");
 
-App.use(
-  Express.urlencoded({
-    extended: true,
-  })
-);
-
-App.use(Express.json());
-
+App.use(Json);
 App.use("/", Route);
 
 Database.connect()
