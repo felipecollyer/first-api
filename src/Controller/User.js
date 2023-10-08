@@ -1,4 +1,6 @@
 const Conn = require("../DB/conn");
+const CreateTokenJWT = require("../Handler");
+//const CreateToken = require("../Middlewares/CreateTokenJWT");
 
 module.exports = class User {
   static Createuser(req, res) {
@@ -13,6 +15,18 @@ module.exports = class User {
         res.send(`Usuario ${payload.email} criado com sucesso`);
       }
     });
+  }
+
+  static createJWT(req, res) {
+    console.log("verificando logica");
+    const id = "123456789";
+    res.json({
+      token: CreateTokenJWT(id),
+    });
+  }
+
+  static readJWT(req, res) {
+    res.send("lendo JWT");
   }
 
   static ReadOneUser(req, res) {

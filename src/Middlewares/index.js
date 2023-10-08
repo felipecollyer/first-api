@@ -1,4 +1,3 @@
-const log1 = require("../Middlewares/log1");
-const log2 = require("../Middlewares/log2");
+const AuthenticateToken = require("./AuthenticateTokenJWT");
 
-module.exports = { log1, log2 };
+module.exports = { AuthenticateToken };
