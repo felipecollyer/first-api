@@ -2,7 +2,7 @@ const Conn = require("../DB/conn");
 const CreateTokenJWT = require("../Handler");
 //const CreateToken = require("../Middlewares/CreateTokenJWT");
 
-module.exports = class User {
+class UserController {
   static Createuser(req, res) {
     const payload = req.body;
 
@@ -83,4 +83,6 @@ module.exports = class User {
       }
     });
   }
-};
+}
+
+module.exports = UserController;
