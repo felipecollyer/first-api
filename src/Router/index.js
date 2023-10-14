@@ -2,14 +2,14 @@ const Express = require("express");
 const Router = Express.Router();
 const Controler = require("../Controller/User");
 
-Router.get("/user", Controler.ReadAllUser);
+Router.post("/user", Controler.Create_User);
 
-Router.get("/user/:id", Controler.ReadOneUser);
+Router.get("/user", Controler.Read_User);
 
-Router.post("/user", Controler.Createuser);
-
-Router.put("/user/:id", Controler.UpdateUser);
+Router.put("/user/:id", Controler.Update_User);
 
 Router.delete("/user/:id", Controler.DeleteUser);
+
+Router.get("/all-user", Controler.all_User_test);
 
 module.exports = Router;

@@ -1,3 +1,3 @@
-const createToken = require("./CreateTokenJWT");
+const { Register_User } = require("./User_Hander");
 
-module.exports = createToken;
+module.exports = { Register_User };
