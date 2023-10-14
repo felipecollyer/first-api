@@ -5,9 +5,7 @@ const Read = async (InputValue) => {
 
   try {
     const Result = await Conn.query(sql, [InputValue]);
-    const SenhaCrypt = Result.rows[0].senha;
-
-    return SenhaCrypt;
+    return Result.rows[0];
   } catch (error) {
     throw error;
   }

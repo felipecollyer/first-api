@@ -2,7 +2,7 @@ require("dotenv").config();
 const JWT = require("jsonwebtoken");
 const secret = process.env.JWT_SECRET;
 
-const CreateTokenJWT = (id) => {
+const Create_Token = (id) => {
   return JWT.sign(
     {
       data: id,
@@ -12,4 +12,4 @@ const CreateTokenJWT = (id) => {
   );
 };
 
-module.exports = CreateTokenJWT;
+module.exports = Create_Token;

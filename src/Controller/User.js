@@ -5,6 +5,7 @@ const Bcrypt = require("bcrypt");
 const saltRounds = 10;
 const If_Exist_User = require("../Handler/If_Exist_User");
 const User_Hander = require("../Handler/User_Hander");
+const CreateToken = require("../Jwt");
 
 class UserController {
   static async Create_User(req, res) {
@@ -34,13 +35,14 @@ class UserController {
 
   static async Read_User(req, res) {
     const { email, senha } = req.body;
-    const CheckSenha = await User_Hander.Read(email);
+    const ResultUser = await User_Hander.Read(email);
 
-    if (CheckSenha) {
-      const ValidHash = Bcrypt.compareSync(senha, CheckSenha);
+    if (ResultUser) {
+      const ValidHash = Bcrypt.compareSync(senha, ResultUser.senha);
+      const token = CreateToken(ResultUser.id);
 
       if (ValidHash) {
-        res.status(200).json({ msg: "voce foi logado" });
+        res.status(200).json({ msg: "voce foi logado", token: token });
       } else {
         res.status(400).json({ msg: "Senha errada" });
       }
