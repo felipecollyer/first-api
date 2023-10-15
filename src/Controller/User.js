@@ -1,8 +1,5 @@
 const Conn = require("../DB/conn");
-const CreateTokenJWT = require("../Handler");
 const Bcrypt = require("bcrypt");
-//const CreateToken = require("../Middlewares/CreateTokenJWT");
-const saltRounds = 10;
 const If_Exist_User = require("../Handler/If_Exist_User");
 const User_Hander = require("../Handler/User_Hander");
 const CreateToken = require("../Jwt");
@@ -15,7 +12,7 @@ class UserController {
       const UserExist = await If_Exist_User(email);
 
       if (!UserExist) {
-        const hashPassword = Bcrypt.hashSync(senha, saltRounds);
+        const hashPassword = Bcrypt.hashSync(senha, 10);
         const InputValue = [email, hashPassword];
 
         try {
@@ -30,6 +27,8 @@ class UserController {
       } else {
         res.status(400).json({ msg: "Email ja registrado" });
       }
+    } else {
+      res.status(400).json({ msg: "Campos obrigatorios." });
     }
   }
 
@@ -39,13 +38,15 @@ class UserController {
 
     if (ResultUser) {
       const ValidHash = Bcrypt.compareSync(senha, ResultUser.senha);
-      const token = CreateToken(ResultUser.id);
 
       if (ValidHash) {
+        const token = CreateToken(ResultUser.id);
         res.status(200).json({ msg: "voce foi logado", token: token });
       } else {
         res.status(400).json({ msg: "Senha errada" });
       }
+    } else {
+      res.status(400).json({ msg: "Email invalido" });
     }
   }
 

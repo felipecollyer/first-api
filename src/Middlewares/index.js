@@ -1,3 +1,3 @@
-const AuthenticateToken = require("./AuthenticateTokenJWT");
+const Verify_Token = require("../Middlewares/Verify_token");
 
-module.exports = { AuthenticateToken };
+module.exports = { Verify_Token };
