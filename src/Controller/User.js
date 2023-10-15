@@ -3,6 +3,9 @@ const If_Exist_User = require("../Handler/If_Exist_User");
 const User_Hander = require("../Handler/User_Hander");
 const CreateToken = require("../Jwt");
 const Create_Hash = require("../Libs/Bcrypt");
+const Read_Hash = require("../Libs/Bcrypt");
+
+const Bcrypt = require("bcrypt");
 
 class UserController {
   static async Create_User(req, res) {
@@ -13,9 +16,7 @@ class UserController {
         const UserExist = await If_Exist_User(email);
 
         if (!UserExist) {
-          //criar hash Password
-          const HashPassword = await Create_Hash();
-
+          const HashPassword = await Create_Hash.Create_Hash(senha);
           const InputValue = [email, HashPassword];
 
           try {
@@ -42,13 +43,18 @@ class UserController {
     const ResultUser = await User_Hander.Read(email);
 
     if (ResultUser) {
-      const ValidHash = Bcrypt.compareSync(senha, ResultUser.senha);
+      try {
+        const ValidHash = await Read_Hash.Read_Hash(senha, ResultUser.senha);
 
-      if (ValidHash) {
-        const token = CreateToken(ResultUser.id);
-        res.status(200).json({ msg: "voce foi logado", token: token });
-      } else {
-        res.status(400).json({ msg: "Senha errada" });
+        if (ValidHash) {
+          const token = CreateToken(ResultUser.id);
+          res.status(200).json({ msg: "voce foi logado", token: token });
+        } else {
+          res.status(400).json({ msg: "Senha errada" });
+        }
+      } catch (error) {
+        console.log(error);
+        res.json({ error: error });
       }
     } else {
       res.status(400).json({ msg: "Email invalido" });

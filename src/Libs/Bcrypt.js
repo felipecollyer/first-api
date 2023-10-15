@@ -2,11 +2,22 @@ require("dotenv").config();
 const saltRounds = 10;
 const Bcrypt = require("bcrypt");
 
-const Create_Hash = async () => {
-  const Salt = await Bcrypt.genSalt(saltRounds);
-  const Hash = await Bcrypt.hash(process.env.BCRYP_SECRET, Salt);
+const Create_Hash = async (senha) => {
+  const Hash = await Bcrypt.hash(senha, saltRounds);
 
   return Hash;
 };
 
-module.exports = Create_Hash;
+const Read_Hash = async (senha, senhaCrypt) => {
+  try {
+    const Check = await Bcrypt.compare(senha, senhaCrypt);
+    console.log(Check);
+    return Check;
+  } catch (error) {
+    throw error;
+  }
+
+  //return Hash;
+};
+
+module.exports = { Create_Hash, Read_Hash };
