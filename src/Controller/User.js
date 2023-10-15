@@ -1,34 +1,39 @@
 const Conn = require("../DB/conn");
-const Bcrypt = require("bcrypt");
 const If_Exist_User = require("../Handler/If_Exist_User");
 const User_Hander = require("../Handler/User_Hander");
 const CreateToken = require("../Jwt");
+const Create_Hash = require("../Libs/Bcrypt");
 
 class UserController {
   static async Create_User(req, res) {
     const { email, senha } = req.body;
 
     if (email && senha) {
-      const UserExist = await If_Exist_User(email);
+      try {
+        const UserExist = await If_Exist_User(email);
 
-      if (!UserExist) {
-        const hashPassword = Bcrypt.hashSync(senha, 10);
-        const InputValue = [email, hashPassword];
+        if (!UserExist) {
+          //criar hash Password
+          const HashPassword = await Create_Hash();
 
-        try {
-          const RegisterSucess = await User_Hander.Register(InputValue);
-          if (RegisterSucess) {
-            res.status(200).json({ msg: "Usuario registrado com sucesso" });
+          const InputValue = [email, HashPassword];
+
+          try {
+            const RegisterSucess = await User_Hander.Register(InputValue);
+            if (RegisterSucess) {
+              res.status(200).json({ msg: "Usuario registrado com sucesso" });
+            }
+          } catch (error) {
+            console.log(error);
+            res.status(500).json({ msg: "Error no servidor" });
           }
-        } catch (error) {
-          console.log(error);
-          res.status(500).json({ msg: "Error no servidor" });
+        } else {
+          res.status(400).json({ msg: "Email ja registrado" });
         }
-      } else {
-        res.status(400).json({ msg: "Email ja registrado" });
+      } catch (error) {
+        console.log(error);
+        res.status(500).json({ msg: "error no servidor" });
       }
-    } else {
-      res.status(400).json({ msg: "Campos obrigatorios." });
     }
   }
 
