@@ -4,19 +4,22 @@ const Jwt = require("jsonwebtoken");
 const Middlewares = Express();
 const secret = process.env.JWT_SECRET;
 
-const AuthenticateToken = Middlewares.use((req, res, next) => {
+const AuthenticateToken = Middlewares.use(async (req, res, next) => {
   const { authorization } = req.headers;
+
+  if (!authorization) {
+    return res.status(403).json({ message: "Token não fornecido" });
+  }
+
   const token = authorization.split(" ")[1];
 
-  Jwt.verify(token, secret, function (err, decoded) {
-    if (decoded) {
-      console.log("autenticacao realizada");
-      console.log(decoded.data);
-      next();
-    } else {
-      console.log(err);
-    }
-  });
+  try {
+    const PayLoad = await Jwt.verify(token, secret);
+    req.user = PayLoad;
+    next();
+  } catch (error) {
+    return res.status(401).json({ message: "Token inválido" });
+  }
 });
 
 module.exports = AuthenticateToken;

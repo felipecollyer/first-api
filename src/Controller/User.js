@@ -95,16 +95,8 @@ class UserController {
     }
   }
 
-  static createJWT(req, res) {
-    console.log("verificando logica");
-    const id = "123456789";
-    res.json({
-      token: CreateTokenJWT(id),
-    });
-  }
-
-  static readJWT(req, res) {
-    res.send("lendo JWT");
+  static authorization(req, res) {
+    res.status(200).json({ msg: "Token valido", user: req.user });
   }
 
   static ReadAllUser(req, res) {
