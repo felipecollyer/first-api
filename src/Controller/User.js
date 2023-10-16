@@ -2,10 +2,8 @@ const Conn = require("../DB/conn");
 const If_Exist_User = require("../Handler/If_Exist_User");
 const User_Hander = require("../Handler/User_Hander");
 const CreateToken = require("../Jwt");
-const Create_Hash = require("../Libs/Bcrypt");
-const Read_Hash = require("../Libs/Bcrypt");
+const BcryptHash = require("../Libs/Bcrypt");
 
-const Bcrypt = require("bcrypt");
 
 class UserController {
   static async Create_User(req, res) {
@@ -16,7 +14,7 @@ class UserController {
         const UserExist = await If_Exist_User(email);
 
         if (!UserExist) {
-          const HashPassword = await Create_Hash.Create_Hash(senha);
+          const HashPassword = await BcryptHash.Create_Hash(senha);
           const InputValue = [email, HashPassword];
 
           try {
@@ -44,7 +42,7 @@ class UserController {
 
     if (ResultUser) {
       try {
-        const ValidHash = await Read_Hash.Read_Hash(senha, ResultUser.senha);
+        const ValidHash = await BcryptHash.Read_Hash(senha, ResultUser.senha);
 
         if (ValidHash) {
           const token = CreateToken(ResultUser.id);
