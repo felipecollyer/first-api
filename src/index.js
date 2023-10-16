@@ -3,11 +3,11 @@ const Express = require("express");
 const App = Express();
 const Database = require("./DB/conn");
 const Port = process.env.PORT;
-const Route = require("./Router");
+const UserRouter = require("./Router");
 const Json = require("./Middlewares/Json");
 
 App.use(Json);
-App.use("/", Route);
+App.use("/", UserRouter);
 
 Database.connect()
   .then(() => {
