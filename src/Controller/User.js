@@ -4,11 +4,11 @@ const User_Hander = require("../Handler/User_Hander");
 const CreateToken = require("../Jwt");
 const BcryptHash = require("../Libs/Bcrypt");
 
-
 class UserController {
   static async Create_User(req, res) {
-    const { email, senha } = req.body;
-
+    //const { email, senha } = req.body;
+    const email = req.body;
+    const senha = req.body;
     if (email && senha) {
       try {
         const UserExist = await If_Exist_User(email);

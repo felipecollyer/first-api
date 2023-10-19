@@ -11,7 +11,11 @@ UserRouter.put("/user/:id", Controler.Update_User);
 
 UserRouter.delete("/user/:id", Controler.DeleteUser);
 
-UserRouter.get("/authorization", Middlewares.Verify_Token, Controler.authorization);
+UserRouter.get(
+  "/authorization",
+  Middlewares.Verify_Token,
+  Controler.authorization
+);
 
 UserRouter.get("/all-user", Controler.all_User_test);
 
