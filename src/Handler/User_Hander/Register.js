@@ -5,7 +5,7 @@ const Register = async (InputValue) => {
 
   try {
     const result = await Conn.query(sql, InputValue);
-    return result;
+    return true;
   } catch (error) {
     throw error;
   }

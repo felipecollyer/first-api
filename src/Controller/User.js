@@ -1,70 +1,98 @@
 const Conn = require("../DB/conn");
-const If_Exist_User = require("../Handler/If_Exist_User");
 const User_Hander = require("../Handler/User_Hander");
 const CreateToken = require("../Jwt");
-const BcryptHash = require("../Libs/Bcrypt");
+const { BcryptClass } = require("../Libs/Bcrypt");
+const { Verify_Token } = require("../Middlewares");
 
 class UserController {
   static async Create_User(req, res) {
-    //const { email, senha } = req.body;
-    const email = req.body;
-    const senha = req.body;
-    if (email && senha) {
+    const { email, senha } = req.body;
+    if (!email || !senha) {
+      return res
+        .status(400)
+        .json({ msg: "Campos obrigatórios não preenchidos" });
+    }
+    try {
+      const isUserExist = await User_Hander.FindUser(email);
+      if (isUserExist) {
+        return res
+          .status(400)
+          .json({ msg: `E-mail ${isUserExist.email} ja registrado` });
+      }
+
+      const hashedPassword = await BcryptClass.Create_Hash(senha);
+
+      const InputValue = [email, hashedPassword];
       try {
-        const UserExist = await If_Exist_User(email);
-
-        if (!UserExist) {
-          const HashPassword = await BcryptHash.Create_Hash(senha);
-          const InputValue = [email, HashPassword];
-
-          try {
-            const RegisterSucess = await User_Hander.Register(InputValue);
-            if (RegisterSucess) {
-              res.status(200).json({ msg: "Usuario registrado com sucesso" });
-            }
-          } catch (error) {
-            console.log(error);
-            res.status(500).json({ msg: "Error no servidor" });
-          }
-        } else {
-          res.status(400).json({ msg: "Email ja registrado" });
+        const registerSucess = await User_Hander.Register(InputValue);
+        if (registerSucess) {
+          return res
+            .status(200)
+            .json({ msg: "Usuario registrado com sucesso." });
         }
       } catch (error) {
         console.log(error);
-        res.status(500).json({ msg: "error no servidor" });
+        return res
+          .status(500)
+          .json({ msg: "Error no servidor ao registrar o usuario" });
       }
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ msg: "Error em validar os campos" });
     }
   }
 
   static async Read_User(req, res) {
     const { email, senha } = req.body;
-    const ResultUser = await User_Hander.Read(email);
+    if (!email || !senha) {
+      return res
+        .status(400)
+        .json({ msg: "Campos obrigatórios não preenchidos" });
+    }
 
-    if (ResultUser) {
-      try {
-        const ValidHash = await BcryptHash.Read_Hash(senha, ResultUser.senha);
-
-        if (ValidHash) {
-          const token = CreateToken(ResultUser.id);
-          res.status(200).json({ msg: "voce foi logado", token: token });
-        } else {
-          res.status(400).json({ msg: "Senha errada" });
+    try {
+      const ResultUser = await User_Hander.FindUser(email);
+      if (ResultUser) {
+        try {
+          const ValidHash = await BcryptClass.Read_Hash(
+            senha,
+            ResultUser.crypt
+          );
+          console.log(ResultUser);
+          if (ValidHash) {
+            const token = CreateToken(ResultUser.id);
+            res.status(200).json({ msg: "voce foi logado", token: token });
+          } else {
+            res.status(400).json({ msg: "Senha errada" });
+          }
+        } catch (error) {
+          res.status(500).json({ error: "Error no servidor" });
         }
-      } catch (error) {
-        console.log(error);
-        res.json({ error: error });
+      } else {
+        res.status(400).json({ msg: `Email nao registrado` });
       }
-    } else {
-      res.status(400).json({ msg: "Email invalido" });
+    } catch (error) {
+      res.status(500).json({ msg: "Error no servidor" });
     }
   }
 
   static async Update_User(req, res) {
-    const { id } = req.params;
+    const idParams = req.params.id;
     const { email, senha } = req.body;
+    const idUser = req.user.data;
+
+    if (idUser.toString() != idParams) {
+      return res
+        .status(400)
+        .json({ msg: "Error em ao enviar paramentro ID incorreto" });
+    }
+
+    if (!email && !senha) {
+      return res.status(400).json({ msg: "Error, senha e email em branco" });
+    }
 
     try {
-      const Update = await User_Hander.Update([email, senha, id]);
+      const Update = await User_Hander.Update([email, senha, idUser]);
       if (Update) {
         res
           .status(200)
@@ -94,7 +122,7 @@ class UserController {
   }
 
   static async all_User_test(req, res) {
-    const sql = `SELECT * FROM usuarios`;
+    const sql = `SELECT * FROM usuarios ORDER BY id`;
 
     try {
       const Result = await Conn.query(sql);
