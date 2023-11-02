@@ -5,7 +5,7 @@ const secret = "token-secreto";
 const Create_Token = (id) => {
   return JWT.sign(
     {
-      data: id,
+      idUser: id,
     },
     secret,
     { expiresIn: "1h" }

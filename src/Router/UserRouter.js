@@ -6,7 +6,7 @@ const Middlewares = require("../Middlewares");
 UserRouter.post("/user", Controler.Create_User);
 UserRouter.get("/user", Controler.Read_User);
 UserRouter.put("/user/:id", Middlewares.Verify_Token, Controler.Update_User);
-UserRouter.delete("/user/:id", Controler.DeleteUser);
+UserRouter.delete("/user/:id", Middlewares.Verify_Token, Controler.DeleteUser);
 
 UserRouter.get(
   "/authorization",

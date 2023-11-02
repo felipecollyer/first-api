@@ -14,9 +14,9 @@ const Verify_Token = Middlewares.use(async (req, res, next) => {
   const token = authorization.split(" ")[1];
 
   try {
-    const PayLoad = await Jwt.verify(token, secret);
+    const tokenPayload = await Jwt.verify(token, secret);
 
-    req.user = PayLoad;
+    req.dataToken = tokenPayload;
     next();
   } catch (error) {
     return res.status(401).json({ message: "Token inválido", error });
