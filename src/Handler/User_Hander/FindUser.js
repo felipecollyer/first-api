@@ -1,6 +1,6 @@
 const Conn = require("../../DB/conn");
 
-const findOneUser = async (email, method) => {
+const byEmail = async (email, method) => {
   const sql2 = "SELECT id, email, senha FROM usuarios WHERE email = $1";
 
   try {
@@ -31,7 +31,7 @@ const findOneUser = async (email, method) => {
   }
 };
 
-const findOneUserById = async (InputValue) => {
+const byId = async (InputValue) => {
   const sql2 = "SELECT id, email, senha FROM usuarios WHERE id = $1";
 
   try {
@@ -53,4 +53,4 @@ const findOneUserById = async (InputValue) => {
   }
 };
 
-module.exports = { findOneUser, findOneUserById };
+module.exports = { byEmail, byId };
