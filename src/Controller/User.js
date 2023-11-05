@@ -1,10 +1,10 @@
 const Conn = require("../DB/conn");
 const User = require("../Handler/User");
 const CreateTokenJWT = require("../Libs/Jwt");
-const Crypt = require("../Libs/Crypt");
+const Bcrypt = require("../Libs/Bcrypt");
 
 class UserController {
-  static async Create_User(req, res) {
+  static async Create(req, res) {
     const method = req.method;
     const { email, senha } = req.body;
     if (!email || !senha) {
@@ -13,14 +13,14 @@ class UserController {
         .json({ msg: "Campos obrigatórios não preenchidos" });
     }
     try {
-      const isUserExist = await User.FindUser.byEmail(email, method);
+      const isUserExist = await User.Find.byEmail(email, method);
 
       if (isUserExist) {
         return res.status(400).json({ msg: `E-mail ${email} ja registrado` });
       }
 
       try {
-        const createPasswordCrypt = await Crypt.Create(senha);
+        const createPasswordCrypt = await Bcrypt.CreatePassword(senha);
         const registeUserDB = await User.Register(email, createPasswordCrypt);
 
         if (registeUserDB) {
@@ -40,7 +40,7 @@ class UserController {
     }
   }
 
-  static async Read_User(req, res) {
+  static async Read(req, res) {
     const method = req.method;
     const { email, senha } = req.body;
     if (!email || !senha) {
@@ -50,11 +50,11 @@ class UserController {
     }
 
     try {
-      const userExist = await User.FindUser.byEmail(email, method);
+      const userExist = await User.Find.byEmail(email, method);
 
       if (userExist) {
         try {
-          const checkPassword = await Crypt.checkPasswordUser(
+          const checkPassword = await Bcrypt.CheckPassword(
             senha,
             userExist.crypt
           );
@@ -78,7 +78,7 @@ class UserController {
     }
   }
 
-  static async Update_User(req, res) {
+  static async Update(req, res) {
     const method = req.method;
     const idParams = req.params.id;
     const IdToken = req.dataToken.idUser;
@@ -96,7 +96,7 @@ class UserController {
 
     if (email && senha) {
       try {
-        const checkEmail = await User.FindUser.byEmail(email, method);
+        const checkEmail = await User.Find.byEmail(email, method);
 
         if (checkEmail) {
           return res.status(400).json({ msg: "Email, ja registrado" });
@@ -121,7 +121,7 @@ class UserController {
 
     if (email && !senha) {
       try {
-        const checkEmail = await User.FindUser.findOneUser(email, method);
+        const checkEmail = await User.Find.findOneUser(email, method);
         if (checkEmail) {
           return res.status(400).json({ msg: "Email, ja registrado" });
         } else {
@@ -176,33 +176,33 @@ class UserController {
     }
   }
 
-  static async all_User_test(req, res) {
-    const sql = `SELECT * FROM usuarios ORDER BY id`;
+  // static async all_test(req, res) {
+  //   const sql = `SELECT * FROM usuarios ORDER BY id`;
 
-    try {
-      const Result = await Conn.query(sql);
-      res.json({ Usuarios: Result.rows });
-      return;
-    } catch (error) {
-      throw error;
-    }
-  }
+  //   try {
+  //     const Result = await Conn.query(sql);
+  //     res.json({ Usuarios: Result.rows });
+  //     return;
+  //   } catch (error) {
+  //     throw error;
+  //   }
+  // }
 
-  static authorization(req, res) {
-    res.status(200).json({ msg: "Token valido", user: req.user });
-  }
+  // static authorization(req, res) {
+  //   res.status(200).json({ msg: "Token valido", user: req.user });
+  // }
 
-  static ReadAllUser(req, res) {
-    const sql = "SELECT * FROM usuarios";
+  // static ReadAllUser(req, res) {
+  //   const sql = "SELECT * FROM usuarios";
 
-    Conn.query(sql, (err, data) => {
-      if (err) {
-        console.log("errow");
-      } else {
-        res.send(data.rows);
-      }
-    });
-  }
+  //   Conn.query(sql, (err, data) => {
+  //     if (err) {
+  //       console.log("errow");
+  //     } else {
+  //       res.send(data.rows);
+  //     }
+  //   });
+  // }
 }
 
 module.exports = UserController;

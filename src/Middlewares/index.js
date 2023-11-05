@@ -1,3 +1,3 @@
-const Verify_Token = require("../Middlewares/Verify_token");
+const CheckToken = require("./CheckToken");
 
-module.exports = { Verify_Token };
+module.exports = { CheckToken };
