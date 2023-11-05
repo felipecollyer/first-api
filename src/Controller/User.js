@@ -1,8 +1,7 @@
 const Conn = require("../DB/conn");
-const User_Hander = require("../Handler/User_Hander");
-const CreateToken = require("../Jwt");
-const { BcryptClass } = require("../Libs/Bcrypt");
-const { Verify_Token } = require("../Middlewares");
+const User = require("../Handler/User");
+const CreateTokenJWT = require("../Libs/Jwt");
+const Crypt = require("../Libs/Crypt");
 
 class UserController {
   static async Create_User(req, res) {
@@ -14,23 +13,23 @@ class UserController {
         .json({ msg: "Campos obrigatórios não preenchidos" });
     }
     try {
-      const isUserExist = await User_Hander.FindUser.byEmail(email, method);
+      const isUserExist = await User.FindUser.byEmail(email, method);
 
       if (isUserExist) {
         return res.status(400).json({ msg: `E-mail ${email} ja registrado` });
       }
 
       try {
-        const hashedPassword = await BcryptClass.Create_Hash(senha);
-        const createUser = [email, hashedPassword];
-        const registerSucess = await User_Hander.Register(createUser);
+        const createPasswordCrypt = await Crypt.Create(senha);
+        const registeUserDB = await User.Register(email, createPasswordCrypt);
 
-        if (registerSucess) {
+        if (registeUserDB) {
           return res
             .status(200)
             .json({ msg: "Usuario registrado com sucesso." });
         }
       } catch (error) {
+        console.log(error);
         return res
           .status(500)
           .json({ msg: "Error no servidor ao salvar o usuario" });
@@ -51,15 +50,18 @@ class UserController {
     }
 
     try {
-      const UserExist = await User_Hander.FindUser.byEmail(email, method);
+      const userExist = await User.FindUser.byEmail(email, method);
 
-      if (UserExist) {
+      if (userExist) {
         try {
-          const ValidHash = await BcryptClass.Read_Hash(senha, UserExist.crypt);
+          const checkPassword = await Crypt.checkPasswordUser(
+            senha,
+            userExist.crypt
+          );
 
-          if (ValidHash) {
-            const token = CreateToken(UserExist.id);
-            res.status(200).json({ msg: "voce foi logado", token: token });
+          if (checkPassword) {
+            const tokenJWT = CreateTokenJWT(userExist.id);
+            res.status(200).json({ msg: "voce foi logado", token: tokenJWT });
           } else {
             res.status(400).json({ msg: "Senha errada" });
           }
@@ -94,13 +96,13 @@ class UserController {
 
     if (email && senha) {
       try {
-        const checkEmail = await User_Hander.FindUser.byEmail(email, method);
+        const checkEmail = await User.FindUser.byEmail(email, method);
 
         if (checkEmail) {
           return res.status(400).json({ msg: "Email, ja registrado" });
         } else {
           const cryptNewSenha = await BcryptClass.Create_Hash(senha);
-          const updateAll = await User_Hander.Update.UpdateEmailAndSenha(
+          const updateAll = await User.Update.UpdateEmailAndSenha(
             email,
             cryptNewSenha,
             IdToken
@@ -119,14 +121,11 @@ class UserController {
 
     if (email && !senha) {
       try {
-        const checkEmail = await User_Hander.FindUser.findOneUser(
-          email,
-          method
-        );
+        const checkEmail = await User.FindUser.findOneUser(email, method);
         if (checkEmail) {
           return res.status(400).json({ msg: "Email, ja registrado" });
         } else {
-          const updateEmailSucess = await User_Hander.Update.UpdateEmail(
+          const updateEmailSucess = await User.Update.UpdateEmail(
             email,
             IdToken
           );
@@ -144,7 +143,7 @@ class UserController {
     if (!email && senha) {
       try {
         const cryptNewSenha = await BcryptClass.Create_Hash(senha);
-        const UpdateSenha = await User_Hander.Update.UpdateSenha(
+        const UpdateSenha = await User.Update.UpdateSenha(
           cryptNewSenha,
           IdToken
         );
@@ -166,7 +165,7 @@ class UserController {
     }
 
     try {
-      const DeleteHandler = await User_Hander.Remove([id]);
+      const DeleteHandler = await User.Remove([id]);
       if (DeleteHandler) {
         return res.status(200).json({ msg: "Usuario Deletado" });
       } else {

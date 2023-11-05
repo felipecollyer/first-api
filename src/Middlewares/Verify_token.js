@@ -1,8 +1,7 @@
-require("dotenv").config();
 const Express = require("express");
 const Jwt = require("jsonwebtoken");
 const Middlewares = Express();
-const secret = "token-secreto";
+const secret = process.env.JWT_SECRET;
 
 const Verify_Token = Middlewares.use(async (req, res, next) => {
   const { authorization } = req.headers;
