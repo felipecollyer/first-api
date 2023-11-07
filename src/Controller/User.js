@@ -1,4 +1,3 @@
-const Conn = require("../DB/conn");
 const User = require("../Handler/User");
 const CreateTokenJWT = require("../Libs/Jwt");
 const Bcrypt = require("../Libs/Bcrypt");
@@ -175,34 +174,6 @@ class UserController {
       return res.status(500).json({ msg: "Error ao deletar usuario" });
     }
   }
-
-  // static async all_test(req, res) {
-  //   const sql = `SELECT * FROM usuarios ORDER BY id`;
-
-  //   try {
-  //     const Result = await Conn.query(sql);
-  //     res.json({ Usuarios: Result.rows });
-  //     return;
-  //   } catch (error) {
-  //     throw error;
-  //   }
-  // }
-
-  // static authorization(req, res) {
-  //   res.status(200).json({ msg: "Token valido", user: req.user });
-  // }
-
-  // static ReadAllUser(req, res) {
-  //   const sql = "SELECT * FROM usuarios";
-
-  //   Conn.query(sql, (err, data) => {
-  //     if (err) {
-  //       console.log("errow");
-  //     } else {
-  //       res.send(data.rows);
-  //     }
-  //   });
-  // }
 }
 
 module.exports = UserController;

@@ -6,9 +6,10 @@ const Database = require("./DB/conn");
 const Port = process.env.PORT;
 const Json = require("./Middlewares/Json");
 
-const RouterUser = require("./Router/index");
+const Router = require("./Router/index");
 App.use(Json);
-App.use("/", RouterUser);
+App.use("/", Router.User);
+App.use("/", Router.Test);
 
 const swaggerUi = require("swagger-ui-express");
 const swaggerFileOut = require("../swagger.json");
