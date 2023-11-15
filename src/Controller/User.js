@@ -84,6 +84,7 @@ class UserController {
     let { email, senha } = req.body;
 
     if (idParams != IdToken) {
+      console.log(idParams, IdToken);
       return res.status(401).json({ msg: "Nao autorizado atualizacao." });
     }
 
@@ -100,7 +101,7 @@ class UserController {
         if (checkEmail) {
           return res.status(400).json({ msg: "Email, ja registrado" });
         } else {
-          const cryptNewSenha = await BcryptClass.Create_Hash(senha);
+          const cryptNewSenha = await Bcrypt.CreatePassword(senha);
           const updateAll = await User.Update.UpdateEmailAndSenha(
             email,
             cryptNewSenha,
@@ -120,7 +121,7 @@ class UserController {
 
     if (email && !senha) {
       try {
-        const checkEmail = await User.Find.findOneUser(email, method);
+        const checkEmail = await User.Find.byEmail(email, method);
         if (checkEmail) {
           return res.status(400).json({ msg: "Email, ja registrado" });
         } else {
@@ -135,13 +136,14 @@ class UserController {
           }
         }
       } catch (error) {
+        console.log(error);
         return res.status(500).json({ msg: "Error ao alterar Email." });
       }
     }
 
     if (!email && senha) {
       try {
-        const cryptNewSenha = await BcryptClass.Create_Hash(senha);
+        const cryptNewSenha = await Bcrypt.CreatePassword(senha);
         const UpdateSenha = await User.Update.UpdateSenha(
           cryptNewSenha,
           IdToken
