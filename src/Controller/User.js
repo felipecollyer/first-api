@@ -1,41 +1,34 @@
 const User = require("../Handler/User");
 const CreateTokenJWT = require("../Libs/Jwt");
 const Bcrypt = require("../Libs/Bcrypt");
+const AppErro = require("../utils/AppError");
 
 class UserController {
   static async Create(req, res) {
     const method = req.method;
-    const { email, senha } = req.body;
-    if (!email || !senha) {
-      return res
-        .status(400)
-        .json({ msg: "Campos obrigatórios não preenchidos" });
+    const { email, senha, confirmPassword } = req.body;
+
+    if (!email || !senha || !confirmPassword) {
+      throw new AppErro("Todos os campos sao obrigatorios.");
     }
+
+    const isUserExist = await User.Find.byEmail(email, method);
+    if (isUserExist) {
+      throw new AppErro(`Email: ${email}, ja registrado.`);
+    }
+
     try {
-      const isUserExist = await User.Find.byEmail(email, method);
+      const createPasswordCrypt = await Bcrypt.CreatePassword(senha);
+      const registeUserDB = await User.Register(email, createPasswordCrypt);
 
-      if (isUserExist) {
-        return res.status(400).json({ msg: `E-mail ${email} ja registrado` });
-      }
-
-      try {
-        const createPasswordCrypt = await Bcrypt.CreatePassword(senha);
-        const registeUserDB = await User.Register(email, createPasswordCrypt);
-
-        if (registeUserDB) {
-          return res
-            .status(200)
-            .json({ msg: "Usuario registrado com sucesso." });
-        }
-      } catch (error) {
-        console.log(error);
-        return res
-          .status(500)
-          .json({ msg: "Error no servidor ao salvar o usuario" });
+      if (registeUserDB) {
+        return res.status(201).json({ msg: "Usuario registrado com sucesso." });
       }
     } catch (error) {
       console.log(error);
-      res.status(500).json({ msg: "Error no servidor ao registrar os campos" });
+      return res
+        .status(500)
+        .json({ msg: "Error no servidor ao salvar o usuario." });
     }
   }
 

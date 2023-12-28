@@ -1,4 +1,4 @@
-require("dotenv").config();
+require("dotenv").config({ path: "./src/.env" });
 const { Client } = require("pg");
 
 const Conn = new Client({
