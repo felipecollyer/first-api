@@ -8,7 +8,7 @@ class UserController {
     const method = req.method;
     const { email, senha, confirmPassword } = req.body;
 
-    if (!email || !senha || !confirmPassword) {
+    if (!email || !senha) {
       throw new AppErro("Todos os campos sao obrigatorios.");
     }
 

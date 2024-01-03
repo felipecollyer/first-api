@@ -5,6 +5,7 @@ const byEmail = async (email, method) => {
 
   try {
     const Result = await Conn.query(sql2, [email]);
+    console.log(Result.rows[0]);
 
     if (Result.rowCount === 0) {
       return null;

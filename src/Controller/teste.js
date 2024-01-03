@@ -41,14 +41,19 @@ class TestController {
 
   static async CreateUser(req, res) {
     let i = 1;
-    const sql = "INSERT INTO usuarios (nome, senha) VALUES ($1, $2)";
+    const sql =
+      "INSERT INTO usuarios (email, senha, acesso ) VALUES ($1, $2, $3)";
 
     try {
       for (i = 1; i < 10; i++) {
-        const nome = `teste-${i}`;
+        const email = `teste-${i}`;
         const senha = `teste-${i}`;
         const senhacrypt = await Bcrypt.CreatePassword(senha);
-        const result = await Conn.query(sql, [`${nome}`, `${senhacrypt}`]);
+        const result = await Conn.query(sql, [
+          `${email}`,
+          `${senhacrypt}`,
+          "pendente",
+        ]);
       }
       res.status(200).json({ data: `Usuarios  criados` });
     } catch (error) {
