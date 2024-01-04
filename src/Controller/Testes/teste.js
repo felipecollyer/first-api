@@ -1,5 +1,5 @@
-const Conn = require("../DB/conn");
-const Bcrypt = require("../Libs/Bcrypt");
+const Conn = require("../../DB/conn");
+const Bcrypt = require("../../Libs/Bcrypt");
 
 class TestController {
   static async DropDB(req, res) {

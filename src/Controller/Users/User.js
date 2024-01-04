@@ -1,7 +1,7 @@
-const User = require("../Handler/User");
-const CreateTokenJWT = require("../Libs/Jwt");
-const Bcrypt = require("../Libs/Bcrypt");
-const AppErro = require("../utils/AppError");
+const User = require("../../Handler/Cadastro");
+const CreateTokenJWT = require("../../Libs/Jwt");
+const Bcrypt = require("../../Libs/Bcrypt");
+const AppErro = require("../../utils/AppError");
 
 class UserController {
   static async Create(req, res) {

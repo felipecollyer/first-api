@@ -1,6 +1,6 @@
 const Express = require("express");
 const RouterTeste = Express.Router();
-const ControllerTeste = require("../Controller/teste");
+const ControllerTeste = require("../../Controller/Testes/teste");
 
 RouterTeste.get("/dropTable", ControllerTeste.DropDB);
 RouterTeste.get("/createTable", ControllerTeste.CreateDB);

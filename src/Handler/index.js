@@ -1,4 +1,4 @@
-const { Register_User } = require("./User");
-const { Acesso_User } = require("./Acesso");
+const { Register_User } = require("./Cadastro");
+const AdminHandler = require("./Admin");
 
-module.exports = { Register_User, Acesso_User };
+module.exports = { Register_User, AdminHandler };

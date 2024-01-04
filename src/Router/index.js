@@ -1,12 +1,13 @@
 const { Router } = require("express");
 
 const router = Router();
-const UserRouter = require("./User");
-const AcessoRouter = require("./Acesso");
-const TestRouter = require("./Test");
 
-router.use("/cadastro", UserRouter);
+const CadastroRouter = require("./Cadastro");
+const AdminRouter = require("./Admin");
+const TestRouter = require("./Testes");
+
+router.use("/cadastro", CadastroRouter);
 router.use("/teste", TestRouter);
-router.use("/acesso", AcessoRouter);
+router.use("/admin", AdminRouter);
 
 module.exports = router;
